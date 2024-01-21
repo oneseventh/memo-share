@@ -31,19 +31,24 @@ export const createMemo = async (title, content) => {
 
 export const getMemoById = async (memoId) => {
     try {
-        const memo = await prisma.memos.findUnique({
+        // 추가: memoId 값이 유효한 정수인지 확인
+        if (typeof memoId !== 'number' || memoId <= 0) {
+            return { memo: null, isError: 400 };
+        }
+
+        const memo = await client.memos.findUnique({
             where: {
                 id: memoId,
             },
         });
 
         if (!memo) {
-            return { memo: null, isError: 404 }
+            return { memo: null, isError: 404 };
         }
-    
+
         return { memo: memo, isError: null };
     } catch (error) {
         console.error("Error fetching memo by ID:", error);
-        return { memo: null, isError: 500 }
+        return { memo: null, isError: 500 };
     }
 };
